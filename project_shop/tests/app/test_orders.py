@@ -20,7 +20,6 @@ ORDERS_COUNT = randint(5, 10)
 def get_payload(user):
     """
     Generating a payload for creating/updating orders.
-
     We dave to explicitly Indicate the price in order to avoid further exception:
     "A field with precision 9, scale 2  must round to an absolute value less than 10^7."
     """
