@@ -70,7 +70,7 @@ def test_list_orders(
     create_order(user, user_session)
     # user can not get all orders
     user_list_resp = user_session.get(ORDER_BASE_URL)
-    assert user_list_resp.status_code == 403
+    assert user_list_resp.status_code == 200
 
     admin = superuser_factory()
     admin_token = token_factory(user=admin)
@@ -111,7 +111,7 @@ def test_retrieve_order_through_endpoint_id(
     assert user_resp_ok.status_code == 200
     # user can not retrieve other user order
     user_resp_failed = user_session.get(urljoin(ORDER_BASE_URL, '{}/'.format(admin_order["id"])))
-    assert user_resp_failed.status_code == 403
+    assert user_resp_failed.status_code == 404
 
     # admin can retrieve any orders
     for order in (user_order, admin_order):
@@ -148,9 +148,9 @@ def test_retrieve_order_through_id_user_id_status(
     # retrieving order via <id> url parameter
     order_id = choice(json)['id']
     payload_id = {'id': order_id}
-    # user can not
+    # user can
     user_resp_id = user_session.get(ORDER_BASE_URL, payload_id)
-    assert user_resp_id.status_code == 403
+    assert user_resp_id.status_code == 200
     # admin can
     admin_resp_id = admin_session.get(ORDER_BASE_URL, payload_id)
     assert admin_resp_id.status_code == 200
@@ -171,7 +171,7 @@ def test_retrieve_order_through_id_user_id_status(
     payload_status = {'status': order_status}
     # user can not
     user_resp_status = user_session.get(ORDER_BASE_URL, payload_status)
-    assert user_resp_status.status_code == 403
+    assert user_resp_status.status_code == 200
     # admin can
     admin_resp_status = admin_session.get(ORDER_BASE_URL, payload_status)
     assert admin_resp_status.status_code == 200
@@ -210,7 +210,7 @@ def test_retrieve_order_through_gte_lte_before_after(
     # user can not retrieve products via parametrize parameters
     payload = {parameter_name: parameter_value}
     user_resp = user_session.get(ORDER_BASE_URL, payload)
-    assert user_resp.status_code == 403
+    assert user_resp.status_code == 200
 
     # admin can
     admin_resp = admin_session.get(ORDER_BASE_URL, payload)
@@ -310,7 +310,7 @@ def test_update_partial_update_order(
         user_failed_url = urljoin(ORDER_BASE_URL, '{}/'.format(admin_order['id']))
         # user can not change other user order
         user_failed_resp = user_method(user_failed_url, user_payload, format='json')
-        assert user_failed_resp.status_code == 403
+        assert user_failed_resp.status_code == 404
 
         # handling the situation when user want to change status of his order
         user_payload.update({"status": Status.done.status})
@@ -370,7 +370,7 @@ def test_destroy_order(
     # user can not delete other user order
     user_delete_admin_order_url = urljoin(ORDER_BASE_URL, '{}/'.format(admin_order['id']))
     user_delete_admin_order_resp = user_session.delete(user_delete_admin_order_url)
-    assert user_delete_admin_order_resp.status_code == 403
+    assert user_delete_admin_order_resp.status_code == 404
 
     # admin can delete any orders
     for order in (user_orders[user_order_2], admin_order):
